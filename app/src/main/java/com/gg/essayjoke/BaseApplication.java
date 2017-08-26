@@ -2,6 +2,7 @@ package com.gg.essayjoke;
 
 import android.app.Application;
 
+import com.gg.baselibrary.fixbug.FixDexManager;
 import com.gg.framelibrary.ExceptionCrashHandler;
 
 /**
@@ -11,17 +12,21 @@ import com.gg.framelibrary.ExceptionCrashHandler;
 public class BaseApplication extends Application {
 
 
-
-
-
-
     @Override
     public void onCreate() {
         super.onCreate();
         ExceptionCrashHandler.getInstance().init(this);
+
+
+        try {
+            FixDexManager fixDexManager = new FixDexManager(this);
+            fixDexManager.loadFixDex();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
-
-
 
 
 }
