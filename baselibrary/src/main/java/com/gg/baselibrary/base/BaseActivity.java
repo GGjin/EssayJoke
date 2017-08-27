@@ -9,6 +9,7 @@ import com.gg.baselibrary.ioc.ViewUtils;
 
 /**
  * Created by GG on 2017/8/24.
+ * Activity的基类
  */
 
 public abstract class BaseActivity extends AppCompatActivity {
@@ -66,7 +67,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param clazz
      * @param bundle
      */
-    protected void startActivity(Class<?> clazz, Bundle bundle) {
+    protected void startActivity(Class<?> clazz,@Nullable Bundle bundle) {
         Intent intent = new Intent(this, clazz);
         if (bundle != null) {
             intent.putExtras(bundle);
@@ -89,7 +90,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param requestCode
      * @param bundle
      */
-    protected void startActivityForResult(Class<?> clazz, int requestCode, Bundle bundle) {
+    protected void startActivityForResult(Class<?> clazz, int requestCode,@Nullable Bundle bundle) {
         Intent intent = new Intent(this, clazz);
         if (bundle != null) {
             intent.putExtras(bundle);

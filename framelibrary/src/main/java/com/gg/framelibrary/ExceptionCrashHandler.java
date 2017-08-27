@@ -21,6 +21,7 @@ import static java.lang.Thread.currentThread;
 
 /**
  * Created by GG on 2017/8/25.
+ * 自定义异常捕捉类
  */
 
 public class ExceptionCrashHandler implements Thread.UncaughtExceptionHandler {
@@ -36,9 +37,9 @@ public class ExceptionCrashHandler implements Thread.UncaughtExceptionHandler {
     }
 
     public static ExceptionCrashHandler getInstance() {
-        if (mInstance != null) {
+        if (mInstance == null) {
             synchronized (ExceptionCrashHandler.class) {
-                if (mInstance != null) {
+                if (mInstance == null) {
                     mInstance = new ExceptionCrashHandler();
                 }
             }
@@ -93,7 +94,7 @@ public class ExceptionCrashHandler implements Thread.UncaughtExceptionHandler {
             }
 
             if (!dir.exists()) {
-                dir.mkdir();
+                dir.mkdirs();
             }
             try {
                 fileName = dir.toString() + File.separator + getAssignTime("yyyy_MM_dd_HH_mm") + ".txt";
