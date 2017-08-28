@@ -10,7 +10,7 @@ import com.gg.baselibrary.fixbug.FixDexManager;
 import com.gg.baselibrary.ioc.OnClick;
 import com.gg.baselibrary.ioc.ViewBind;
 import com.gg.framelibrary.BaseSkinActivity;
-import com.gg.framelibrary.ExceptionCrashHandler;
+import com.gg.baselibrary.ExceptionCrashHandler;
 
 import java.io.File;
 import java.io.FileInputStream;

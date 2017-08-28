@@ -3,7 +3,7 @@ package com.gg.essayjoke;
 import android.app.Application;
 
 import com.gg.baselibrary.fixbug.FixDexManager;
-import com.gg.framelibrary.ExceptionCrashHandler;
+import com.gg.baselibrary.ExceptionCrashHandler;
 
 /**
  * Created by GG on 2017/8/25.
