@@ -32,6 +32,9 @@ public class MainActivity extends BaseSkinActivity {
 
     @Override
     protected void initTitle() {
+        DefaultNavigationBar defaultNavigationBar = new DefaultNavigationBar.Builder(this)
+                .setText(R.id.right_text,"返回").
+                        setMiddleText("标题").create();
 
     }
 
@@ -42,7 +45,6 @@ public class MainActivity extends BaseSkinActivity {
 
     @Override
     protected void initDate() {
-
 
 
 //        fixDexBug();
@@ -87,7 +89,7 @@ public class MainActivity extends BaseSkinActivity {
 
     @OnClick(R.id.text_tv)
     private void textTvClick(TextView textTv) {
-        Log.d(TAG,"被点击了");
+        Log.d(TAG, "被点击了");
         AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setContentView(R.layout.ss_comment_dialog)
                 .fromBottom(true)
@@ -95,7 +97,7 @@ public class MainActivity extends BaseSkinActivity {
                 .setOnClickListener(R.id.weibo, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.d(TAG,"weibo被电击了");
+                        Log.d(TAG, "weibo被电击了");
                     }
                 })
                 .show();

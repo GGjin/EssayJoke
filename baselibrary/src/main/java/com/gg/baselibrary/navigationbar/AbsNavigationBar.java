@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -20,6 +21,10 @@ public abstract class AbsNavigationBar<P extends AbsNavigationBar.Builder.AbsNav
     public AbsNavigationBar(P params) {
         this.mParams = params;
         createAndBindView();
+    }
+
+    public P getParams() {
+        return mParams;
     }
 
     private void createAndBindView() {
@@ -53,9 +58,21 @@ public abstract class AbsNavigationBar<P extends AbsNavigationBar.Builder.AbsNav
         }
     }
 
+    public void setIcon(int viewId, int iconId) {
+        ImageView iv = findViewById(viewId);
+        if (iconId != 0) {
+            iv.setVisibility(View.VISIBLE);
+            iv.setImageResource(iconId);
+        } else {
+            iv.setVisibility(View.GONE);
+        }
+    }
+
+
     public void setOnClickListener(int viewId, View.OnClickListener listener) {
         findViewById(viewId).setOnClickListener(listener);
     }
+
 
     public <T extends View> T findViewById(int viewId) {
         return (T) mParentView.findViewById(viewId);
@@ -78,6 +95,7 @@ public abstract class AbsNavigationBar<P extends AbsNavigationBar.Builder.AbsNav
 
 
         public static class AbsNavigationParams {
+
 
             public Context mContext;
 
