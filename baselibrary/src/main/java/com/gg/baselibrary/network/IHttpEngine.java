@@ -10,10 +10,10 @@ import java.util.Map;
 
 public interface IHttpEngine {
 
-    <T> void get(Context context, String url, Map<String, Object> params,
-                    final HttpCallBack<T> callback, final boolean cache);
+     void get(Context context, String url, Map<String, Object> params,
+                    final EngineCallBack callback, final boolean cache);
 
-    <T> void post(Context context, String url, Map<String, Object> params,
-                     final HttpCallBack<T> callback, final boolean cache);
+     void post(Context context, String url, Map<String, Object> params,
+                     final EngineCallBack callback, final boolean cache);
 
 }

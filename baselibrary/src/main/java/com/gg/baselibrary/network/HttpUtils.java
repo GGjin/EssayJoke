@@ -4,6 +4,8 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 /**
@@ -23,6 +25,9 @@ public class HttpUtils {
     private Map<String, Object> mParams;
 
     private IHttpEngine mHttpEngine;
+
+    private static IHttpEngine initHttpEngine;
+
     private String mUrl;
 
 
@@ -36,7 +41,7 @@ public class HttpUtils {
     }
 
     public void init(IHttpEngine httpEngine) {
-        mHttpEngine = httpEngine;
+        initHttpEngine = httpEngine;
     }
 
     public HttpUtils get() {
@@ -60,7 +65,7 @@ public class HttpUtils {
     }
 
     public HttpUtils setEngine(IHttpEngine httpEngine) {
-        mHttpEngine = httpEngine;
+        initHttpEngine = httpEngine;
         return this;
     }
 
@@ -70,10 +75,18 @@ public class HttpUtils {
     }
 
 
-    public void execute(HttpCallBack callBack) {
+    public void execute(EngineCallBack callBack) {
 
         if (TextUtils.isEmpty(mUrl)) {
-            throw new IllegalArgumentException("请传入获取的网址");
+            throw new UrlMissingException("请传入获取的网址");
+        }
+
+        //当初始化 网络引擎  或者是在使用时替换了 网络引擎 就在这 导入
+        if (initHttpEngine != null)
+            mHttpEngine = initHttpEngine;
+
+        if (mHttpEngine == null) {
+            throw new EngineLackException("未设置网络引擎");
         }
 
         switch (mType) {
@@ -91,5 +104,71 @@ public class HttpUtils {
         execute(null);
     }
 
+
+    public static String jointParams(String url, Map<String, Object> params) {
+        if (params == null || params.size() == 0)
+            return url;
+
+        StringBuffer stringBuffer = new StringBuffer(url);
+
+        if (!url.contains("?")) {
+            stringBuffer.append("?");
+        } else {
+            if (!url.endsWith("?")) {
+                stringBuffer.append("&");
+            }
+        }
+
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            stringBuffer.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+        }
+
+        stringBuffer.deleteCharAt(stringBuffer.length() - 1);
+
+        return stringBuffer.toString();
+    }
+
+    public Class<?> analysisClazzInfo(Object object) {
+        Type type = object.getClass().getGenericSuperclass();
+        Type[] params = ((ParameterizedType) type).getActualTypeArguments();
+        return (Class<?>) params[0];
+    }
+
+
+    private class UrlMissingException extends RuntimeException {
+        public UrlMissingException() {
+        }
+
+        UrlMissingException(String message) {
+            super(message);
+        }
+
+        public UrlMissingException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public UrlMissingException(Throwable cause) {
+            super(cause);
+        }
+
+    }
+
+    private class EngineLackException extends RuntimeException {
+        public EngineLackException() {
+        }
+
+        EngineLackException(String message) {
+            super(message);
+        }
+
+        public EngineLackException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public EngineLackException(Throwable cause) {
+            super(cause);
+        }
+
+    }
 
 }

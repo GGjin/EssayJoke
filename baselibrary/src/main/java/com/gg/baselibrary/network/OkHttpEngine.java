@@ -13,12 +13,12 @@ public class OkHttpEngine implements IHttpEngine {
 
 
     @Override
-    public <T> void get(Context context, String url, Map<String, Object> params, HttpCallBack<T> callback, boolean cache) {
+    public void get(Context context, String url, Map<String, Object> params, EngineCallBack callback, boolean cache) {
 
     }
 
     @Override
-    public <T> void post(Context context, String url, Map<String, Object> params, HttpCallBack<T> callback, boolean cache) {
+    public void post(Context context, String url, Map<String, Object> params, EngineCallBack callback, boolean cache) {
 
     }
 }
