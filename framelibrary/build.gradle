@@ -29,4 +29,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.+'
     testCompile 'junit:junit:4.12'
     compile project(':baselibrary')
+    compile 'com.elvishew:xlog:1.3.0'
 }

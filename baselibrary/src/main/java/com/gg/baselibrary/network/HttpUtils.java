@@ -4,8 +4,6 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Map;
 
 /**
@@ -29,6 +27,8 @@ public class HttpUtils {
     private static IHttpEngine initHttpEngine;
 
     private String mUrl;
+    //是否缓存
+    private boolean mCache = false;
 
 
     private HttpUtils(Context context) {
@@ -40,7 +40,7 @@ public class HttpUtils {
         return new HttpUtils(context);
     }
 
-    public void init(IHttpEngine httpEngine) {
+    public static void init(IHttpEngine httpEngine) {
         initHttpEngine = httpEngine;
     }
 
@@ -54,12 +54,12 @@ public class HttpUtils {
         return this;
     }
 
-    public HttpUtils addParam(String key, Object value) {
+    public HttpUtils param(String key, Object value) {
         mParams.put(key, value);
         return this;
     }
 
-    public HttpUtils addparams(Map<String, Object> map) {
+    public HttpUtils params(Map<String, Object> map) {
         mParams.putAll(map);
         return this;
     }
@@ -71,6 +71,11 @@ public class HttpUtils {
 
     public HttpUtils url(String url) {
         mUrl = url;
+        return this;
+    }
+
+    public HttpUtils cache(boolean cache) {
+        mCache = cache;
         return this;
     }
 
@@ -91,49 +96,18 @@ public class HttpUtils {
 
         switch (mType) {
             case TYPE_GET:
-                mHttpEngine.get(mContext, mUrl, mParams, callBack, false);
+                mHttpEngine.get(mContext, mUrl, mParams, callBack, mCache);
                 break;
             case TYPE_POST:
-                mHttpEngine.post(mContext, mUrl, mParams, callBack, false);
+                mHttpEngine.post(mContext, mUrl, mParams, callBack, mCache);
                 break;
         }
 
     }
 
-    public void execute() {
-        execute(null);
-    }
-
-
-    public static String jointParams(String url, Map<String, Object> params) {
-        if (params == null || params.size() == 0)
-            return url;
-
-        StringBuffer stringBuffer = new StringBuffer(url);
-
-        if (!url.contains("?")) {
-            stringBuffer.append("?");
-        } else {
-            if (!url.endsWith("?")) {
-                stringBuffer.append("&");
-            }
-        }
-
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            stringBuffer.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
-        }
-
-        stringBuffer.deleteCharAt(stringBuffer.length() - 1);
-
-        return stringBuffer.toString();
-    }
-
-    public Class<?> analysisClazzInfo(Object object) {
-        Type type = object.getClass().getGenericSuperclass();
-        Type[] params = ((ParameterizedType) type).getActualTypeArguments();
-        return (Class<?>) params[0];
-    }
-
+//    public void execute() {
+//        execute(null);
+//    }
 
     private class UrlMissingException extends RuntimeException {
         public UrlMissingException() {

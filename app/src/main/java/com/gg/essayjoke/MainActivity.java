@@ -5,12 +5,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.elvishew.xlog.XLog;
+import com.gg.baselibrary.ExceptionCrashHandler;
 import com.gg.baselibrary.dialog.AlertDialog;
 import com.gg.baselibrary.fixbug.FixDexManager;
 import com.gg.baselibrary.ioc.OnClick;
 import com.gg.baselibrary.ioc.ViewBind;
+import com.gg.baselibrary.network.HttpUtils;
 import com.gg.framelibrary.BaseSkinActivity;
-import com.gg.baselibrary.ExceptionCrashHandler;
+import com.gg.framelibrary.ConstantValue;
+import com.gg.framelibrary.HttpCallBack;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,7 +50,20 @@ public class MainActivity extends BaseSkinActivity {
 
     @Override
     protected void initDate() {
+        HttpUtils.with(this).url(ConstantValue.UrlConstant.HOME_DISCOVERY_URL)
+                .param("iid", 6152551759L).param("aid", 7)
+                .execute(new HttpCallBack<DiscoverListResult>() {
+                    @Override
+                    public void onSuccess(DiscoverListResult discoverListResult) {
+                        XLog.tag(TAG).json(new Gson().toJson(discoverListResult).toString());
+                        XLog.tag(TAG).e(discoverListResult);
+                    }
 
+                    @Override
+                    public void onFailure(Exception e) {
+
+                    }
+                });
 
 //        fixDexBug();
     }
