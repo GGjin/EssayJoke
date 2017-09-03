@@ -1,4 +1,4 @@
-package com.gg.framelibrary;
+package com.gg.framelibrary.base;
 
 import com.gg.baselibrary.base.BaseActivity;
 

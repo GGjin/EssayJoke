@@ -1,4 +1,4 @@
-package com.gg.framelibrary;
+package com.gg.framelibrary.utils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

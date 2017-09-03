@@ -1,10 +1,12 @@
-package com.gg.framelibrary;
+package com.gg.framelibrary.http;
 
 import android.content.Context;
 import android.util.Log;
 
 import com.gg.baselibrary.network.EngineCallBack;
 import com.gg.baselibrary.network.IHttpEngine;
+import com.gg.framelibrary.utils.SPHttpCache;
+import com.gg.framelibrary.utils.Utils;
 
 import java.io.IOException;
 import java.util.Map;

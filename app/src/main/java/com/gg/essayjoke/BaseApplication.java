@@ -10,7 +10,7 @@ import com.elvishew.xlog.printer.ConsolePrinter;
 import com.elvishew.xlog.printer.Printer;
 import com.gg.baselibrary.fixbug.FixDexManager;
 import com.gg.baselibrary.network.HttpUtils;
-import com.gg.framelibrary.OKHttpEngine;
+import com.gg.framelibrary.http.OKHttpEngine;
 
 /**
  * Created by GG on 2017/8/25.
