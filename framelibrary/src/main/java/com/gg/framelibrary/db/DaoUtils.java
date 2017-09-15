@@ -1,5 +1,9 @@
 package com.gg.framelibrary.db;
 
+import android.database.Cursor;
+
+import java.lang.reflect.Method;
+
 /**
  * Created by GG on 2017/9/3.
  */
@@ -10,7 +14,7 @@ public class DaoUtils {
         return clazz.getSimpleName();
     }
 
-    public static String getComlumnType(String type) {
+    public static String getColumnType(String type) {
         String value = null;
 
         if (type.contains("String")) {
@@ -31,5 +35,13 @@ public class DaoUtils {
         return value;
     }
 
+    public static Method cursorMethod(Class<?> type) throws Exception {
+        String methodName = getColumnMethodName(type);
+        return Cursor.class.getMethod(methodName, int.class);
+    }
+
+    private static String getColumnMethodName(Class<?> filedType) {
+        return null;
+    }
 
 }

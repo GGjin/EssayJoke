@@ -15,6 +15,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
@@ -23,14 +24,15 @@ import okhttp3.Response;
 
 public class OKHttpEngine implements IHttpEngine {
     private SPHttpCache mHttpCache;
+    OkHttpClient mOkHttpClient = new OkHttpClient();
 
-    public OKHttpEngine(){
+
+    public OKHttpEngine() {
         mHttpCache = new SPHttpCache();
     }
 
     @Override
     public void get(final Context context, String url, Map<String, Object> params, final EngineCallBack callback, final boolean cache) {
-        OkHttpClient mOkHttpClient = new OkHttpClient();
         // 公共参数
         params.put("app_name", "joke_essay");
         params.put("version_name", "5.7.0");
@@ -46,7 +48,7 @@ public class OKHttpEngine implements IHttpEngine {
         final String jointUrl = Utils.jointParams(url, params);  //打印
         // 缓存问题
         Log.e("Post请求路径：", jointUrl);  // 缓存写到  SP 里面，多级缓存（内存中 30条,数据库 ，文件中 ）
-        final String cacheJson = mHttpCache.getCache(context,jointUrl);
+        final String cacheJson = mHttpCache.getCache(context, jointUrl);
         // 写一大堆处理逻辑 ，内存怎么扩展等等
 //        if (cache && !TextUtils.isEmpty(cacheJson)) {
 //            Gson gson = new Gson();
@@ -70,7 +72,7 @@ public class OKHttpEngine implements IHttpEngine {
             public void onResponse(Call call, Response response) throws IOException {
                 final String resultJson = response.body().string();
 
-                Log.e("TAG",resultJson.equals(cacheJson)+"");
+                Log.e("TAG", resultJson.equals(cacheJson) + "");
                 if (cache && resultJson.equals(cacheJson)) {
                     return;
                 }
@@ -84,14 +86,34 @@ public class OKHttpEngine implements IHttpEngine {
                 callback.onSuccess(resultJson);
 
                 if (cache) {
-                    mHttpCache.saveCache(context,jointUrl, resultJson);
+                    mHttpCache.saveCache(context, jointUrl, resultJson);
                 }
             }
         });
     }
 
     @Override
-    public void post(Context context, String url, Map<String, Object> params, EngineCallBack callback, boolean cache) {
+    public void post(Context context, String url, Map<String, Object> params, final EngineCallBack callback, boolean cache) {
+        String joinUrl = Utils.jointParams(url, params);
+        RequestBody requestBody = Utils.appendBody(params);
 
+        final Request request = new Request.Builder()
+                .url(url)
+                .tag(context)
+                .post(requestBody)
+                .build();
+
+        mOkHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String s = request.body().toString();
+                callback.onSuccess(s);
+            }
+        });
     }
 }

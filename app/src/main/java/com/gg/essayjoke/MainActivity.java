@@ -36,8 +36,9 @@ public class MainActivity extends BaseSkinActivity {
     @Override
     protected void initTitle() {
         DefaultNavigationBar defaultNavigationBar = new DefaultNavigationBar.Builder(this)
-                .setText(R.id.right_text, "返回").
-                        setMiddleText("标题").create();
+                .setText(R.id.right_text, "返回")
+                .setMiddleText("标题")
+                .create();
 
     }
 
