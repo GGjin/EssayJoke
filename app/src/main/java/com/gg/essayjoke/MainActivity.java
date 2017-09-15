@@ -1,5 +1,8 @@
 package com.gg.essayjoke;
 
+import android.content.res.AssetManager;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +21,7 @@ import com.gg.framelibrary.db.IDaoSupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 
 
 public class MainActivity extends BaseSkinActivity {
@@ -44,7 +48,37 @@ public class MainActivity extends BaseSkinActivity {
 
     @Override
     protected void initView() {
+        Resources resources = getSkinResources("");
+        if (resources != null) {
+            //获取文件的id
+            int drawableId = resources.getIdentifier("文件名", "drawable", "包名");
+            //根据ID获取资源对象
+            Drawable drawable = resources.getDrawable(drawableId);
+        }
+    }
 
+    /**
+     * 获取其他压缩包内的资源
+     *
+     * @param path
+     */
+    private Resources getSkinResources(String path) {
+        try {
+            Resources resources = getResources();
+            AssetManager assetManager = AssetManager.class.newInstance();
+
+            Method method = AssetManager.class.getDeclaredMethod("addAssetPath", String.class);
+            method.setAccessible(true);
+            //设置从哪里获取到皮肤的资源
+            method.invoke(assetManager, Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + path);
+
+            return new Resources(assetManager, resources.getDisplayMetrics(), resources.getConfiguration());
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
