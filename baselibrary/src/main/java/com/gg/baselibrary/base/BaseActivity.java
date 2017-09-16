@@ -5,7 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.gg.baselibrary.ioc.ViewUtils;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * Created by GG on 2017/8/24.
@@ -14,13 +15,17 @@ import com.gg.baselibrary.ioc.ViewUtils;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
+//    public final String TAG = getClass().getName();
+    private Unbinder mUnbinder;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(getLayoutRes());
 
-        ViewUtils.inject(this);
+//        ViewUtils.inject(this);
+        mUnbinder = ButterKnife.bind(this);
 
         initTitle();
 
@@ -67,7 +72,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param clazz
      * @param bundle
      */
-    protected void startActivity(Class<?> clazz,@Nullable Bundle bundle) {
+    protected void startActivity(Class<?> clazz, @Nullable Bundle bundle) {
         Intent intent = new Intent(this, clazz);
         if (bundle != null) {
             intent.putExtras(bundle);
@@ -90,7 +95,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param requestCode
      * @param bundle
      */
-    protected void startActivityForResult(Class<?> clazz, int requestCode,@Nullable Bundle bundle) {
+    protected void startActivityForResult(Class<?> clazz, int requestCode, @Nullable Bundle bundle) {
         Intent intent = new Intent(this, clazz);
         if (bundle != null) {
             intent.putExtras(bundle);
@@ -98,4 +103,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         startActivityForResult(intent, requestCode);
     }
 
+    @Override
+    protected void onDestroy() {
+        if (mUnbinder != null)
+            mUnbinder.unbind();
+        super.onDestroy();
+    }
 }

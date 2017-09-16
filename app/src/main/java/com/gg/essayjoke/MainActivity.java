@@ -2,7 +2,6 @@ package com.gg.essayjoke;
 
 import android.content.res.AssetManager;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -12,25 +11,24 @@ import com.gg.baselibrary.ExceptionCrashHandler;
 import com.gg.baselibrary.dialog.AlertDialog;
 import com.gg.baselibrary.fixbug.FixDexManager;
 import com.gg.baselibrary.ioc.OnClick;
-import com.gg.baselibrary.ioc.ViewBind;
-import com.gg.essayjoke.model.Person;
 import com.gg.framelibrary.base.BaseSkinActivity;
-import com.gg.framelibrary.db.DaoSupportFactory;
-import com.gg.framelibrary.db.IDaoSupport;
+import com.gg.framelibrary.skin.SkinManager;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 
+import butterknife.BindView;
+
 
 public class MainActivity extends BaseSkinActivity {
 
-    private String TAG = "MainActivity";
+    private static final String TAG= "MainActivity";
 
 
     /****Hello World!****/
-    @ViewBind(R.id.text_tv) private TextView mTextTv;
+    @BindView(R.id.text_tv)  TextView mTextTv;
 
     @Override
     protected int getLayoutRes() {
@@ -48,13 +46,13 @@ public class MainActivity extends BaseSkinActivity {
 
     @Override
     protected void initView() {
-        Resources resources = getSkinResources("");
-        if (resources != null) {
-            //获取文件的id
-            int drawableId = resources.getIdentifier("文件名", "drawable", "包名");
-            //根据ID获取资源对象
-            Drawable drawable = resources.getDrawable(drawableId);
-        }
+//        Resources resources = getSkinResources("");
+//        if (resources != null) {
+//            //获取文件的id
+//            int drawableId = resources.getIdentifier("文件名", "drawable", "包名");
+//            //根据ID获取资源对象
+//            Drawable drawable = resources.getDrawable(drawableId);
+//        }
     }
 
     /**
@@ -83,6 +81,12 @@ public class MainActivity extends BaseSkinActivity {
 
     @Override
     protected void initDate() {
+
+        String skinPath = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"red.skin";
+
+        SkinManager.getInstance().loadSkin(skinPath);
+
+        SkinManager.getInstance().restoreDefault();
 //        HttpUtils.with(this).url(ConstantValue.UrlConstant.HOME_DISCOVERY_URL)
 //                .param("iid", 6152551759L).param("aid", 7)
 //                .execute(new HttpCallBack<DiscoverListResult>() {
@@ -98,9 +102,9 @@ public class MainActivity extends BaseSkinActivity {
 //                    }
 //                });
 
-
-        IDaoSupport dao = DaoSupportFactory.getFactory().getDao(Person.class);
-        dao.insert(new Person());
+//
+//        IDaoSupport dao = DaoSupportFactory.getFactory().getDao(Person.class);
+//        dao.insert(new Person());
 
 //        fixDexBug();
     }
