@@ -17,11 +17,11 @@ import android.view.ViewParent;
 
 import com.gg.baselibrary.base.BaseActivity;
 import com.gg.framelibrary.skin.SkinManager;
-import com.gg.framelibrary.skin.callback.ISkinChangeListener;
-import com.gg.framelibrary.skin.support.SkinSupport;
 import com.gg.framelibrary.skin.attr.SkinAttr;
 import com.gg.framelibrary.skin.attr.SkinView;
+import com.gg.framelibrary.skin.callback.ISkinChangeListener;
 import com.gg.framelibrary.skin.support.SkinAppCompatViewInflater;
+import com.gg.framelibrary.skin.support.SkinSupport;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -140,7 +140,7 @@ public abstract class BaseSkinActivity extends BaseActivity implements LayoutInf
                 // call, therefore we should inherit. This works as the inflated layout is only
                 // added to the hierarchy at the end of the inflate() call.
                 return true;
-            } else if (parent == windowDecor || !(parent instanceof View)
+            } else if (parent == getWindow().getDecorView() || !(parent instanceof View)
                     || ViewCompat.isAttachedToWindow((View) parent)) {
                 // We have either hit the window's decor view, a parent which isn't a View
                 // (i.e. ViewRootImpl), or an attached view, so we know that the original parent

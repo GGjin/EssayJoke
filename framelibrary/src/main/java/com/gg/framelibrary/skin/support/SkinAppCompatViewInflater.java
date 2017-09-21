@@ -131,7 +131,7 @@ public class SkinAppCompatViewInflater  {
                 break;
         }
 
-        if (view == null && originalContext != context) {
+        if (view == null /*&& originalContext != context*/) {//注释掉以后  就可以拦截ViewGroup的创建
             // If the original context does not equal our themed context, then we need to manually
             // inflate it using the name so that android:theme takes effect.
             view = createViewFromTag(context, name, attrs);

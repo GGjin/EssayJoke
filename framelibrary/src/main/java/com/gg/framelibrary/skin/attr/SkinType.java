@@ -22,27 +22,28 @@ public enum SkinType {
             SkinResource skinResource = getSkinResource();
 
             ColorStateList colorStateList = skinResource.getColorByName(resName);
-            if (colorStateList == null)
-                return;
+            if (colorStateList != null)
+                ((TextView) view).setTextColor(colorStateList);
 
-            ((TextView) view).setTextColor(colorStateList);
         }
     }, BACKGROUND("background") {
         @Override
         public void skin(View view, String resName) {
             SkinResource skinResource = getSkinResource();
+
+            //背景可能是个图片
             Drawable drawable = skinResource.getDrawableByName(resName);
             if (drawable != null) {
-                ((ImageView) view).setImageDrawable(drawable);
+                ((ImageView) view).setBackgroundDrawable(drawable);
                 return;
             }
-
             //可能是颜色
             ColorStateList colorStateList = skinResource.getColorByName(resName);
             if (colorStateList != null) {
                 view.setBackgroundColor(colorStateList.getDefaultColor());
-                return;
             }
+
+
         }
     }, SRC("src") {
         @Override
