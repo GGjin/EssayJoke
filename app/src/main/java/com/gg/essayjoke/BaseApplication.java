@@ -1,6 +1,7 @@
 package com.gg.essayjoke;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.elvishew.xlog.LogConfiguration;
 import com.elvishew.xlog.LogLevel;
@@ -11,6 +12,7 @@ import com.elvishew.xlog.printer.Printer;
 import com.gg.baselibrary.fixbug.FixDexManager;
 import com.gg.baselibrary.network.HttpUtils;
 import com.gg.framelibrary.http.OKHttpEngine;
+import com.gg.framelibrary.skin.SkinManager;
 
 /**
  * Created by GG on 2017/8/25.
@@ -18,11 +20,13 @@ import com.gg.framelibrary.http.OKHttpEngine;
 
 public class BaseApplication extends Application {
 
+    private Context mContext ;
 
     @Override
     public void onCreate() {
         super.onCreate();
 //        ExceptionCrashHandler.getInstance().init(this);
+        mContext=getApplicationContext();
 
         HttpUtils.init(new OKHttpEngine());
 
@@ -68,6 +72,8 @@ public class BaseApplication extends Application {
             e.printStackTrace();
         }
 
+
+        SkinManager.getInstance().init(mContext);
 
     }
 

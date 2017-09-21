@@ -1,4 +1,4 @@
-package com.gg.framelibrary.base;
+package com.gg.framelibrary;
 
 import android.content.Context;
 import android.os.Build;
@@ -17,6 +17,7 @@ import android.view.ViewParent;
 
 import com.gg.baselibrary.base.BaseActivity;
 import com.gg.framelibrary.skin.SkinManager;
+import com.gg.framelibrary.skin.callback.ISkinChangeListener;
 import com.gg.framelibrary.skin.support.SkinSupport;
 import com.gg.framelibrary.skin.attr.SkinAttr;
 import com.gg.framelibrary.skin.attr.SkinView;
@@ -31,7 +32,7 @@ import java.util.List;
  * Created by GG on 2017/8/24.
  */
 
-public abstract class BaseSkinActivity extends BaseActivity implements LayoutInflaterFactory {
+public abstract class BaseSkinActivity extends BaseActivity implements LayoutInflaterFactory, ISkinChangeListener {
 
 
     private static final String TAG = "BaseSkinActivity";
@@ -70,6 +71,8 @@ public abstract class BaseSkinActivity extends BaseActivity implements LayoutInf
 
             managerSkinView(skinView);
 
+            //4 判断一下 需不需要换肤
+            SkinManager.getInstance().checkChangeSkin(skinView);
         }
 
 
@@ -79,18 +82,26 @@ public abstract class BaseSkinActivity extends BaseActivity implements LayoutInf
         return view;
     }
 
+
+    @Override
+    protected void onDestroy() {
+        SkinManager.getInstance().unregister(this);
+
+        super.onDestroy();
+    }
+
     /**
      * SkinView的统一管理方法
      *
      * @param skinView
      */
     private void managerSkinView(SkinView skinView) {
-      List<SkinView> skinViews =  SkinManager.getInstance().getSkinViews(this);
-        if (skinViews==null){
-            skinViews= new ArrayList<>();
-            SkinManager.getInstance().register(this,skinViews);
+        List<SkinView> skinViews = SkinManager.getInstance().getSkinViews(this);
+        if (skinViews == null) {
+            skinViews = new ArrayList<>();
+            SkinManager.getInstance().register(this, skinViews);
         }
-
+        skinViews.add(skinView);
     }
 
 

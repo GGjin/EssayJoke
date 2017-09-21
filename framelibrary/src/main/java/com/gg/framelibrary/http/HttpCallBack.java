@@ -4,7 +4,6 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.gg.baselibrary.network.EngineCallBack;
-import com.gg.framelibrary.utils.Utils;
 import com.google.gson.Gson;
 
 import java.util.Map;

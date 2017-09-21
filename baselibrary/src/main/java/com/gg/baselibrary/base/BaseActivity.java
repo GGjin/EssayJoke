@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.gg.baselibrary.manager.AppManager;
+
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+
 
 /**
  * Created by GG on 2017/8/24.
@@ -24,6 +27,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         setContentView(getLayoutRes());
 
+        AppManager.getAppManager().addActivity(this);
 //        ViewUtils.inject(this);
         mUnbinder = ButterKnife.bind(this);
 
@@ -104,9 +108,16 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        AppManager.getAppManager().finishActivity();
+    }
+
+    @Override
     protected void onDestroy() {
         if (mUnbinder != null)
             mUnbinder.unbind();
+        AppManager.getAppManager().detach(this);
         super.onDestroy();
     }
 }

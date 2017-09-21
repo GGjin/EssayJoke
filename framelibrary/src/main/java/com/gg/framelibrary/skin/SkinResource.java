@@ -30,7 +30,7 @@ public class SkinResource {
 
             mSkinResources = new Resources(assetManager, resources.getDisplayMetrics(), resources.getConfiguration());
 
-
+            //获取包名 来获取资源
             mPackageName = context.getPackageManager().getPackageArchiveInfo(skinPath, PackageManager.GET_ACTIVITIES).packageName;
         } catch (Exception e) {
             e.printStackTrace();
@@ -49,7 +49,7 @@ public class SkinResource {
 
     public ColorStateList getColorByName(String name) {
         try {
-            int resId = mSkinResources.getIdentifier(name, "drawable", mPackageName);
+            int resId = mSkinResources.getIdentifier(name, "color", mPackageName);
             return mSkinResources.getColorStateList(resId);
         } catch (Exception e) {
             e.printStackTrace();

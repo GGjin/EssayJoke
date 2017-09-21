@@ -1,19 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/main_bg_color"
+    android:padding="10dp"
     tools:context="com.gg.essayjoke.MainActivity">
 
-    <TextView
-        android:id="@+id/text_tv"
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/btn1"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:text="切换皮肤"
+        android:textColor="@color/account_account_action_normal_night"/>
+
+    <Button
+        android:id="@+id/btn2"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/btn1"
+
+        android:layout_marginTop="10dp"
+        android:text="恢复默认"
+        android:textColor="@color/account_account_action_normal_night"/>
+
+    <Button
+        android:id="@+id/btn3"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/btn2"
+
+        android:layout_marginTop="10dp"
+        android:text="跳转页面"
+        android:textColor="@color/account_account_action_normal_night"/>
+
+    <ImageView
+        android:id="@+id/img"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-</android.support.constraint.ConstraintLayout>
+        android:layout_below="@+id/btn3"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/mm"/>
+
+</RelativeLayout>

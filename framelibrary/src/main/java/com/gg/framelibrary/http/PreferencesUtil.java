@@ -1,4 +1,4 @@
-package com.gg.framelibrary.utils;
+package com.gg.framelibrary.http;
 
 import android.content.Context;
 import android.content.SharedPreferences;

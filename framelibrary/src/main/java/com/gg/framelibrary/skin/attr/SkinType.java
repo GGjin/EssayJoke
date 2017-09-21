@@ -16,7 +16,7 @@ import com.gg.framelibrary.skin.SkinResource;
 public enum SkinType {
 
 
-    TEXT_COLOR("textcolor") {
+    TEXT_COLOR("textColor") {
         @Override
         public void skin(View view, String resName) {
             SkinResource skinResource = getSkinResource();

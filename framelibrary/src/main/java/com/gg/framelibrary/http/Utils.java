@@ -1,4 +1,4 @@
-package com.gg.framelibrary.utils;
+package com.gg.framelibrary.http;
 
 import java.io.File;
 import java.lang.reflect.ParameterizedType;

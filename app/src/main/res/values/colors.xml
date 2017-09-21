@@ -737,4 +737,6 @@
     <color name="bg_notify_night">#d7783d4c</color>
     <color name="pink_day">#ffff819f</color>
     <color name="pink_night">#ff783d4c</color>
+
+    <color name="main_bg_color">#ff00ff</color>
 </resources>

@@ -1,34 +1,33 @@
 package com.gg.essayjoke;
 
-import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.os.Environment;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.gg.baselibrary.ExceptionCrashHandler;
-import com.gg.baselibrary.dialog.AlertDialog;
 import com.gg.baselibrary.fixbug.FixDexManager;
-import com.gg.baselibrary.ioc.OnClick;
-import com.gg.framelibrary.base.BaseSkinActivity;
+import com.gg.framelibrary.BaseSkinActivity;
 import com.gg.framelibrary.skin.SkinManager;
+import com.gg.framelibrary.skin.SkinResource;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 
 public class MainActivity extends BaseSkinActivity {
 
-    private static final String TAG= "MainActivity";
+    private static final String TAG = "MainActivity";
+    @BindView(R.id.btn1) Button mBtn1;
+    @BindView(R.id.btn2) Button mBtn2;
+    @BindView(R.id.btn3) Button mBtn3;
+    @BindView(R.id.img) ImageView mImg;
 
-
-    /****Hello World!****/
-    @BindView(R.id.text_tv)  TextView mTextTv;
 
     @Override
     protected int getLayoutRes() {
@@ -55,38 +54,10 @@ public class MainActivity extends BaseSkinActivity {
 //        }
     }
 
-    /**
-     * 获取其他压缩包内的资源
-     *
-     * @param path
-     */
-    private Resources getSkinResources(String path) {
-        try {
-            Resources resources = getResources();
-            AssetManager assetManager = AssetManager.class.newInstance();
-
-            Method method = AssetManager.class.getDeclaredMethod("addAssetPath", String.class);
-            method.setAccessible(true);
-            //设置从哪里获取到皮肤的资源
-            method.invoke(assetManager, Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + path);
-
-            return new Resources(assetManager, resources.getDisplayMetrics(), resources.getConfiguration());
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     @Override
     protected void initDate() {
 
-        String skinPath = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"red.skin";
 
-        SkinManager.getInstance().loadSkin(skinPath);
-
-        SkinManager.getInstance().restoreDefault();
 //        HttpUtils.with(this).url(ConstantValue.UrlConstant.HOME_DISCOVERY_URL)
 //                .param("iid", 6152551759L).param("aid", 7)
 //                .execute(new HttpCallBack<DiscoverListResult>() {
@@ -146,19 +117,33 @@ public class MainActivity extends BaseSkinActivity {
     }
 
 
-    @OnClick(R.id.text_tv)
-    private void textTvClick(TextView textTv) {
-        Log.d(TAG, "被点击了");
-        AlertDialog alertDialog = new AlertDialog.Builder(this)
-                .setContentView(R.layout.ss_comment_dialog)
-                .fromBottom(true)
-                .fullWidth()
-                .setOnClickListener(R.id.weibo, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.d(TAG, "weibo被电击了");
-                    }
-                })
-                .show();
+    @Override
+    public void changeSkin(SkinResource skinResource) {
+
     }
+
+
+    @OnClick(R.id.btn1)
+    public void onMBtn1Clicked() {
+        Toast.makeText(this, "1111", Toast.LENGTH_SHORT).show();
+
+        String skinPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "skin.skin";
+
+        SkinManager.getInstance().loadSkin(skinPath);
+    }
+
+    @OnClick(R.id.btn2)
+    public void onMBtn2Clicked() {
+        Toast.makeText(this, "2222", Toast.LENGTH_SHORT).show();
+
+        SkinManager.getInstance().restoreDefault();
+    }
+
+    @OnClick(R.id.btn3)
+    public void onMBtn3Clicked() {
+        Toast.makeText(this, "3333", Toast.LENGTH_SHORT).show();
+
+        startActivity(MainActivity.class);
+    }
+
 }
