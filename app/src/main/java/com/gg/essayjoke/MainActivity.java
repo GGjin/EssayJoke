@@ -1,5 +1,6 @@
 package com.gg.essayjoke;
 
+import android.content.Intent;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Button;
@@ -52,6 +53,9 @@ public class MainActivity extends BaseSkinActivity {
 //            //根据ID获取资源对象
 //            Drawable drawable = resources.getDrawable(drawableId);
 //        }
+        startService(new Intent(this,MessageService.class));
+        startService(new Intent(this,GuardService.class));
+        startService(new Intent(this,JobWakeUpService.class));
     }
 
     @Override

@@ -6,7 +6,7 @@ package com.gg.baselibrary.navigationbar;
 
 public interface INavigationBar {
 
-    public int bindLayoutId();
+     int bindLayoutId();
 
-    public void applyViews();
+     void applyViews();
 }
