@@ -8,18 +8,18 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    
+
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
 
     <application
+        android:name=".BaseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:largeHeap="true"
-        android:name=".BaseApplication"
         android:theme="@style/AppTheme"
         >
         <activity android:name=".MainActivity">
@@ -30,13 +30,19 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".MessageService"/>
+        <service android:name=".service.MessageService"/>
 
-        <service android:name=".GuardService"
-                 android:process=":guardService"/>
-        <service android:name=".JobWakeUpService"
-                 android:enabled="true"
-                 android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service
+            android:name=".service.GuardService"
+            android:process=":guardService"/>
+        <service
+            android:name=".service.JobWakeUpService"
+            android:enabled="true"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
+
+
+        <activity android:name=".activity.SelectImageActivity"/>
+
     </application>
 
 </manifest>

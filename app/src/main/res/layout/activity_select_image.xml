@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/black">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/image_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/select_image_bottom"
+        android:layout_alignParentBottom="true"
+        android:background="@color/half_transparent"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/image_video_tv"
+            style="@style/select_image_text"
+            android:layout_alignParentLeft="true"
+            android:text="@string/image_video"/>
+
+        <TextView
+            android:id="@+id/num_tv"
+            style="@style/select_image_text"
+            android:layout_centerInParent="true"
+            tools:text="2/9"/>
+
+        <TextView
+            android:id="@+id/preview_tv"
+            style="@style/select_image_text"
+            android:layout_alignParentRight="true"
+            android:text="@string/preview"/>
+
+
+    </RelativeLayout>
+</RelativeLayout>

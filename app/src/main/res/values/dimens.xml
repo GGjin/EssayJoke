@@ -308,4 +308,7 @@
     <dimen name="pm_img_max_height">100.0dip</dimen>
     <dimen name="pm_img_min_width">40.0dip</dimen>
     <dimen name="pm_img_min_height">40.0dip</dimen>
+
+
+    <dimen name="select_image_bottom">44dp</dimen>
 </resources>

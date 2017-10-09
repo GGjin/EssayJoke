@@ -6,10 +6,13 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.gg.baselibrary.ExceptionCrashHandler;
 import com.gg.baselibrary.fixbug.FixDexManager;
+import com.gg.essayjoke.activity.SelectImageActivity;
+import com.gg.essayjoke.service.GuardService;
+import com.gg.essayjoke.service.JobWakeUpService;
+import com.gg.essayjoke.service.MessageService;
 import com.gg.framelibrary.BaseSkinActivity;
 import com.gg.framelibrary.skin.SkinManager;
 import com.gg.framelibrary.skin.SkinResource;
@@ -29,6 +32,7 @@ public class MainActivity extends BaseSkinActivity {
     @BindView(R.id.btn2) Button mBtn2;
     @BindView(R.id.btn3) Button mBtn3;
     @BindView(R.id.img) ImageView mImg;
+    @BindView(R.id.btn4) Button mBtn4;
 
 
     @Override
@@ -132,7 +136,6 @@ public class MainActivity extends BaseSkinActivity {
 
     @OnClick(R.id.btn1)
     public void onMBtn1Clicked() {
-        Toast.makeText(this, "1111", Toast.LENGTH_SHORT).show();
 
         String skinPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "skin.skin";
 
@@ -141,16 +144,20 @@ public class MainActivity extends BaseSkinActivity {
 
     @OnClick(R.id.btn2)
     public void onMBtn2Clicked() {
-        Toast.makeText(this, "2222", Toast.LENGTH_SHORT).show();
 
         SkinManager.getInstance().restoreDefault();
     }
 
     @OnClick(R.id.btn3)
     public void onMBtn3Clicked() {
-        Toast.makeText(this, "3333", Toast.LENGTH_SHORT).show();
 
         startActivity(MainActivity.class);
+    }
+
+    @OnClick(R.id.btn4)
+    public void onMBtn4Clicked() {
+
+        startActivity(SelectImageActivity.class);
     }
 
 }

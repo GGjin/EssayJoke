@@ -14,4 +14,50 @@
         <item name="android:gravity">center</item>
         <item name="android:layout_centerVertical">true</item>
     </style>
+
+
+    <!-- 应用默认的主题样式 -->
+
+    <style name="Theme" parent="android:Theme">
+
+    </style>
+
+    <!-- 修改应用程序的主题样式，让Activity有一个透明效果的背景
+
+                        本例中没有使用Android内置的半透明主题，而是使用完全自定义半透明的主题样式。
+
+    -->
+
+    <style name="Theme.Transparent">
+
+        <!-- 设置允许窗口半透明 -->
+
+        <item name="android:windowIsTranslucent">true</item>
+
+        <!-- 引用Android系统的动画半透明样式 -->
+
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+
+        <!-- 设定窗口背景颜色 -->
+
+        <item name="android:windowBackground">@color/transparent</item>
+
+        <!-- 隐藏窗口标题栏 -->
+
+        <item name="android:windowNoTitle">true</item>
+
+        <!-- 设定文字前景色 -->
+
+        <item name="android:colorForeground">#fff</item>
+
+    </style>
+
+    <style name="select_image_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+
 </resources>

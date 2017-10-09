@@ -1,4 +1,4 @@
-package com.gg.essayjoke;
+package com.gg.essayjoke.service;
 
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
