@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.gg.essayjoke.view.SquareFrameLayout
+<com.gg.essayjoke.selectimage.view.SquareFrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
 
-    <com.gg.essayjoke.view.SquareImageView
-        android:id="@+id/select_img"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        <com.gg.essayjoke.selectimage.view.SquareImageView
+            android:id="@+id/select_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     <ImageView
         android:id="@+id/select_state_img"
@@ -18,4 +18,4 @@
         android:layout_gravity="right|top"
         android:src="@drawable/select_image_state"/>
 
-</com.gg.essayjoke.view.SquareFrameLayout>
+</com.gg.essayjoke.selectimage.view.SquareFrameLayout>

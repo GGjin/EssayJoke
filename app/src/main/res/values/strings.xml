@@ -2,4 +2,9 @@
     <string name="app_name">EssayJoke</string>
     <string name="preview">预览</string>
     <string name="image_video">图片与视频</string>
+
+    <string name="toast_select_image">最多选择%d张图片</string>
+    <string name="compile">编辑</string>
+    <string name="select">选择</string>
+    <string name="real_photo">原图</string>
 </resources>

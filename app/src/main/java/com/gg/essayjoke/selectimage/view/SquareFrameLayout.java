@@ -1,4 +1,4 @@
-package com.gg.essayjoke.view;
+package com.gg.essayjoke.selectimage.view;
 
 import android.content.Context;
 import android.support.annotation.AttrRes;
@@ -29,13 +29,13 @@ public class SquareFrameLayout extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        super.onMeasure(widthMeasureSpec, widthMeasureSpec);
 
-        // get width
-        int width = MeasureSpec.getSize(widthMeasureSpec);
-        // set height = width
-        int height = width;
-
-        setMeasuredDimension(width, height);
+//        // get width
+//        int width = MeasureSpec.getSize(widthMeasureSpec);
+//        // set height = width
+//        int height = width;
+//
+//        setMeasuredDimension(width, height);
     }
 }

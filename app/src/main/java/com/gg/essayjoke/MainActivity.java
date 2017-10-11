@@ -9,7 +9,7 @@ import android.widget.ImageView;
 
 import com.gg.baselibrary.ExceptionCrashHandler;
 import com.gg.baselibrary.fixbug.FixDexManager;
-import com.gg.essayjoke.activity.SelectImageActivity;
+import com.gg.essayjoke.selectimage.SelectImageActivity;
 import com.gg.essayjoke.service.GuardService;
 import com.gg.essayjoke.service.JobWakeUpService;
 import com.gg.essayjoke.service.MessageService;
@@ -38,6 +38,11 @@ public class MainActivity extends BaseSkinActivity {
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_main;
+    }
+
+    @Override
+    protected void initArguments() {
+
     }
 
     @Override

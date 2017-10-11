@@ -21,7 +21,7 @@ public class PreferencesUtil {
     private SharedPreferences preferences = null;
     private SharedPreferences.Editor editor = null;
     private Object object;
-    public static PreferencesUtil preferencesUtil;
+    private static PreferencesUtil preferencesUtil;
 
     public static PreferencesUtil getInstance() {
         if (preferencesUtil == null) {
@@ -143,7 +143,7 @@ public class PreferencesUtil {
      * @return
      */
     public boolean isFirst() {
-        return (Boolean) getParam("isFirst", true);
+        return (Boolean) getParam("isFirst", false);
     }
 
     /**

@@ -18,7 +18,7 @@ import butterknife.Unbinder;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-//    public final String TAG = getClass().getName();
+    //    public final String TAG = getClass().getName();
     private Unbinder mUnbinder;
 
     @Override
@@ -30,6 +30,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         AppManager.getAppManager().addActivity(this);
 //        ViewUtils.inject(this);
         mUnbinder = ButterKnife.bind(this);
+
+        initArguments();
 
         initTitle();
 
@@ -45,6 +47,12 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @return
      */
     protected abstract int getLayoutRes();
+
+
+    /**
+     * 获取传入数据
+     */
+    protected abstract void initArguments() ;
 
     /**
      * 初始化头部

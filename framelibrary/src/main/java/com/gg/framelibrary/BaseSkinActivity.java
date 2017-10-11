@@ -10,7 +10,6 @@ import android.support.v4.view.LayoutInflaterFactory;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.VectorEnabledTintResources;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewParent;
@@ -76,7 +75,7 @@ public abstract class BaseSkinActivity extends BaseActivity implements LayoutInf
         }
 
 
-        Log.w(TAG, "view -> " + view);
+//        Log.w(TAG, "view -> " + view);
 
 
         return view;

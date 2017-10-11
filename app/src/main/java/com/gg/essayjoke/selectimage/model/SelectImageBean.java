@@ -1,4 +1,7 @@
-package com.gg.essayjoke.model;
+package com.gg.essayjoke.selectimage.model;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Creator :  GG
@@ -7,7 +10,7 @@ package com.gg.essayjoke.model;
  * Explain :
  */
 
-public class SelectImageBean {
+public class SelectImageBean implements Parcelable {
 
     private String name ;
 
@@ -57,4 +60,33 @@ public class SelectImageBean {
 
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.name);
+        dest.writeString(this.path);
+        dest.writeLong(this.time);
+    }
+
+    protected SelectImageBean(Parcel in) {
+        this.name = in.readString();
+        this.path = in.readString();
+        this.time = in.readLong();
+    }
+
+    public static final Parcelable.Creator<SelectImageBean> CREATOR = new Parcelable.Creator<SelectImageBean>() {
+        @Override
+        public SelectImageBean createFromParcel(Parcel source) {
+            return new SelectImageBean(source);
+        }
+
+        @Override
+        public SelectImageBean[] newArray(int size) {
+            return new SelectImageBean[size];
+        }
+    };
 }

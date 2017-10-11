@@ -3,7 +3,6 @@ package com.gg.framelibrary.skin.support;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import com.gg.framelibrary.skin.attr.SkinAttr;
 import com.gg.framelibrary.skin.attr.SkinType;
@@ -39,7 +38,7 @@ public class SkinSupport {
 
             //只获取重要的名称 ， 值
 
-            Log.w(TAG, "attrName   ->" + attrName + "   ;  attrValue  ->" + attrValue);
+//            Log.w(TAG, "attrName   ->" + attrName + "   ;  attrValue  ->" + attrValue);
 
             SkinType skinType = getSkinType(attrName);
 
