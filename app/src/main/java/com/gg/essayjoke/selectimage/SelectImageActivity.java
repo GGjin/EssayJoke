@@ -1,14 +1,15 @@
 package com.gg.essayjoke.selectimage;
 
-import android.app.LoaderManager;
-import android.content.CursorLoader;
-import android.content.Loader;
+import android.content.Intent;
+import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -80,7 +81,9 @@ public class SelectImageActivity extends BaseSkinActivity {
     //设置是否显示相机位置  默认true
     private boolean mShowCamera = true;
     //已经选择好的图片
-    private ArrayList<SelectImageBean> mResultList;
+    private ArrayList<SelectImageBean> mSelectList;
+
+    private ArrayList<SelectImageBean> mImageList;
 
     private GridLayoutManager layoutManager;
 
@@ -104,7 +107,8 @@ public class SelectImageActivity extends BaseSkinActivity {
 
     @Override
     protected void initArguments() {
-
+        mSelectList = new ArrayList<>();
+        mImageList = new ArrayList<>();
     }
 
     @Override
@@ -119,8 +123,6 @@ public class SelectImageActivity extends BaseSkinActivity {
 
     @Override
     protected void initView() {
-
-        mResultList = new ArrayList<>();
 
         initRVList();
 
@@ -150,6 +152,9 @@ public class SelectImageActivity extends BaseSkinActivity {
 
         layoutManager = new GridLayoutManager(this, spanCount);
         mImageRv.setLayoutManager(layoutManager);
+        mSelectImageAdapter = new SelectImageAdapter(mImageList, mSelectList, fullRequest, mMaxCount);
+
+        mImageRv.setAdapter(mSelectImageAdapter);
 
 
         mImageRv.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -173,6 +178,33 @@ public class SelectImageActivity extends BaseSkinActivity {
         mImageRv.setItemViewCacheSize(0);
 
 
+        FixedPreloadSizeProvider<SelectImageBean> preloadSizeProvider =
+                new FixedPreloadSizeProvider<>(photoSize, photoSize);
+        RecyclerViewPreloader<SelectImageBean> preLoader = new RecyclerViewPreloader<>(
+                GlideApp.with(this), mSelectImageAdapter, preloadSizeProvider, PRELOAD_AHEAD_ITEMS);
+
+        mImageRv.addOnScrollListener(preLoader);
+
+        mSelectImageAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                Intent intent = new Intent(SelectImageActivity.this, PhotoListActivity.class);
+                intent.putExtra(KEY_POSITION, mShowCamera ? position - 1 : position);
+                intent.putParcelableArrayListExtra(KEY_IMAGES, mSelectList);
+                startActivityForResult(intent, KEY_REQUEST_CODE);
+            }
+        });
+
+        mSelectImageAdapter.setSelectImageListener(new SelectImageListener() {
+            @Override
+            public void setSelect(ArrayList<SelectImageBean> list) {
+                exchangeViewShow();
+
+            }
+        });
+
+
+
 //        if (savedInstanceState != null) {
 //            int index = savedInstanceState.getInt(STATE_POSITION_INDEX);
 //            int offset = savedInstanceState.getInt(STATE_POSITION_OFFSET);
@@ -192,25 +224,25 @@ public class SelectImageActivity extends BaseSkinActivity {
      * 根据选中图片的数量改变提示文字
      */
     private void exchangeViewShow() {
-        if (mResultList.size() > 0) { //至少选择了一张
+        if (mSelectList.size() > 0) { //至少选择了一张
 
         } else {
 
         }
-        mNumTv.setText(mResultList.size() + "/" + mMaxCount);
+        mNumTv.setText(mSelectList.size() + "/" + mMaxCount);
     }
 
     /**
      * 异步任务获取手机内的所有图片
      */
     private void initImageList() {
-        getLoaderManager().initLoader(LOADER_TYPE, null, mCallbacks);
+        getSupportLoaderManager().initLoader(LOADER_TYPE, null, mCallbacks);
     }
 
     private LoaderManager.LoaderCallbacks<Cursor> mCallbacks =
             new LoaderManager.LoaderCallbacks<Cursor>() {
 
-                private final String[] IMAGE_COLUMNS = {
+                private final String[] IMAGE_PROJECTION = {
                         MediaStore.Images.Media.DATA,
                         MediaStore.Images.Media.DISPLAY_NAME,
                         MediaStore.Images.Media.DATE_ADDED,
@@ -220,33 +252,35 @@ public class SelectImageActivity extends BaseSkinActivity {
 
                 };
 
-                @Override
-                public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-                    CursorLoader cursorLoader = new CursorLoader(SelectImageActivity.this,
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                            IMAGE_COLUMNS,
-                            IMAGE_COLUMNS[4] + ">0 AND " + IMAGE_COLUMNS[3]
-                                    + "=? OR " + IMAGE_COLUMNS[3] + "=? ",
-                            new String[]{"image/jpeg", "image/png"},
-                            IMAGE_COLUMNS[2] + " DESC");
 
+                @Override
+                public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+//                    CursorLoader cursorLoader = new CursorLoader(SelectImageActivity.this,
+//                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+//                            IMAGE_PROJECTION,
+//                            IMAGE_PROJECTION[4] + ">0 AND " + IMAGE_PROJECTION[3]
+//                                    + "=? OR " + IMAGE_PROJECTION[3] + "=? ",
+//                            new String[]{"image/jpeg", "image/png"},
+//                            IMAGE_PROJECTION[2] + " DESC");
+//
+//                    return cursorLoader;
+                            CursorLoader cursorLoader = new CursorLoader(SelectImageActivity.this,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION,
+                            null, null, IMAGE_PROJECTION[2] + " DESC");
                     return cursorLoader;
                 }
 
                 @Override
-                public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+                public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
                     ArrayList<SelectImageBean> images = new ArrayList<>();
 
-                    //设置是否显示相机位置
-                    if (mShowCamera)
-                        images.add(new SelectImageBean("camera", "", 0));
-
                     //如果有数据变量
-                    if (cursor != null & cursor.getCount() > 0) {
-                        while (cursor.moveToNext()) {
-                            String path = cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_COLUMNS[0]));
-                            String name = cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_COLUMNS[1]));
-                            long dateTime = cursor.getLong(cursor.getColumnIndexOrThrow(IMAGE_COLUMNS[2]));
+                    if (data != null & data.getCount() > 0) {
+                        data.moveToFirst();
+                        while (data.moveToNext()) {
+                            String path = data.getString(data.getColumnIndexOrThrow(IMAGE_PROJECTION[0]));
+                            String name = data.getString(data.getColumnIndexOrThrow(IMAGE_PROJECTION[1]));
+                            long dateTime = data.getLong(data.getColumnIndexOrThrow(IMAGE_PROJECTION[2]));
 //                    XLog.e(path + " " + name + " " + dateTime+images.size());
 
                             if (!pathExist(path)) {
@@ -256,7 +290,24 @@ public class SelectImageActivity extends BaseSkinActivity {
                             images.add(new SelectImageBean(name, path, dateTime));
                         }
                     }
-                    showListData(images);
+
+                    mImageList.clear();
+
+                    //设置是否显示相机位置
+                    if (mShowCamera) {
+                        mImageList.add(new SelectImageBean("camera", "", 0));
+                    }
+                    mImageList.addAll(images);
+
+                    mSelectImageAdapter.notifyDataSetChanged();
+
+                    SharedPreferencesHelper.getInstance().init(SelectImageActivity.this)
+                            .putStringValue(KeyWord.IMAGE_PATH, GsonUtil.jsonToString(images));
+                }
+
+                @Override
+                public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
+
                 }
 
                 /**
@@ -271,49 +322,7 @@ public class SelectImageActivity extends BaseSkinActivity {
                     return false;
                 }
 
-                @Override
-                public void onLoaderReset(Loader<Cursor> loader) {
-
-                }
             };
-
-    private void showListData(final ArrayList<SelectImageBean> images) {
-
-        SharedPreferencesHelper.getInstance().init(this)
-                .putStringValue(KeyWord.IMAGE_PATH, GsonUtil.jsonToString(images));
-
-        mSelectImageAdapter = new SelectImageAdapter(images, mResultList, fullRequest, mMaxCount);
-
-        mImageRv.setAdapter(mSelectImageAdapter);
-
-        FixedPreloadSizeProvider<SelectImageBean> preloadSizeProvider =
-                new FixedPreloadSizeProvider<>(photoSize, photoSize);
-        RecyclerViewPreloader<SelectImageBean> preLoader = new RecyclerViewPreloader<>(
-                GlideApp.with(this), mSelectImageAdapter, preloadSizeProvider, PRELOAD_AHEAD_ITEMS);
-
-        mImageRv.addOnScrollListener(preLoader);
-
-        mSelectImageAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-//                Intent intent = new Intent(SelectImageActivity.this, PhotoListActivity.class);
-//                intent.putParcelableArrayListExtra(KEY_IMAGES, images);
-//                intent.putExtra(KEY_POSITION, position);
-//                startActivityForResult(intent, KEY_REQUEST_CODE);
-                startActivity(PhotoListActivity.class);
-            }
-        });
-
-        mSelectImageAdapter.setSelectImageListener(new SelectImageListener() {
-            @Override
-            public void setSelect(ArrayList<SelectImageBean> list) {
-                exchangeViewShow();
-
-            }
-        });
-
-
-    }
 
     private int getPageSize(int id) {
         return getResources().getDimensionPixelSize(id);
@@ -368,8 +377,7 @@ public class SelectImageActivity extends BaseSkinActivity {
 //                        .thumbnail(thumbRequest.load(item.getPath()))
                         .into((ImageView) holder.getView(R.id.select_img));
                 holder.setVisible(R.id.select_state_img, true);
-//            Log.e("item" , item.getPath());
-//                ImageLoader.getInstance().displayImage(mContext,item.getPath(),(ImageView) holder.getView(R.id.select_img));
+//                ImageLoader.getInstance().displayImage(mContext, item.getPath(), (ImageView) holder.getView(R.id.select_img));
             }
 
             if (mResultList.contains(item)) {

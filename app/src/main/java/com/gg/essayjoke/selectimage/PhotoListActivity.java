@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.elvishew.xlog.XLog;
 import com.gg.essayjoke.R;
 import com.gg.essayjoke.selectimage.model.SelectImageBean;
 import com.gg.essayjoke.utils.GsonUtil;
@@ -65,9 +66,9 @@ public class PhotoListActivity extends BaseSkinActivity {
         Intent intent = getIntent();
         mSelectImages = intent.getParcelableArrayListExtra(SelectImageActivity.KEY_SELECT_IMAGES);
         mPosition = intent.getIntExtra(SelectImageActivity.KEY_POSITION, 0);
-        mImages = (ArrayList<SelectImageBean>) GsonUtil.jsonToList(
-                SharedPreferencesHelper.getInstance().init(this).getStringValue(KeyWord.IMAGE_PATH)
-                , SelectImageBean.class);
+
+        String imageInfo = SharedPreferencesHelper.getInstance().init(this).getStringValue(KeyWord.IMAGE_PATH);
+        mImages = (ArrayList<SelectImageBean>) GsonUtil.jsonToList(imageInfo, SelectImageBean.class);
         imageProgress(mPosition);
     }
 
@@ -85,15 +86,32 @@ public class PhotoListActivity extends BaseSkinActivity {
 
         mPhotoListAdapter = new PhotoListAdapter(mImages);
 
-        mPhotoListAdapter.setStartUpFetchPosition(mPosition);
 
         PagerSnapHelper pagerSnapHelper = new PagerSnapHelper();
 
-        mPhotoRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        LinearLayoutManager linearLayoutManager =
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+
+        pagerSnapHelper.findSnapView(linearLayoutManager);
+
+        mPhotoRv.setLayoutManager(linearLayoutManager);
 
         pagerSnapHelper.attachToRecyclerView(mPhotoRv);
 
         mPhotoRv.setAdapter(mPhotoListAdapter);
+
+        mPhotoRv.scrollToPosition(mPosition);
+
+        mPhotoListAdapter.setScorllItemListener(new ScorllItemListener() {
+            @Override
+            public void getItemPosition(int position) {
+                XLog.e(position);
+                imageProgress(position);
+            }
+        });
+
+        XLog.e(linearLayoutManager.findFirstVisibleItemPosition());
+
     }
 
     @Override
@@ -116,6 +134,7 @@ public class PhotoListActivity extends BaseSkinActivity {
 
     public class PhotoListAdapter extends BaseQuickAdapter<SelectImageBean, BaseViewHolder> {
 
+        private ScorllItemListener mScorllItemListener;
 
         public PhotoListAdapter(@Nullable List<SelectImageBean> data) {
             super(R.layout.item_photo, data);
@@ -127,6 +146,16 @@ public class PhotoListActivity extends BaseSkinActivity {
                 ImageLoader.getInstance().displayImage(
                         mContext, item.getPath(), (ImageView) holder.getView(R.id.image));
             }
+
+            if (mScorllItemListener != null) {
+                mScorllItemListener.getItemPosition(holder.getAdapterPosition());
+            }
         }
+
+        public void setScorllItemListener(ScorllItemListener scorllItemListener) {
+            mScorllItemListener = scorllItemListener;
+        }
+
+
     }
 }
