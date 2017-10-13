@@ -1,7 +1,6 @@
 package com.gg.essayjoke.selectimage;
 
-import android.content.Intent;
-import android.support.v4.content.Loader;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -10,10 +9,13 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,9 +30,6 @@ import com.gg.essayjoke.selectimage.model.SelectImageBean;
 import com.gg.essayjoke.utils.GlideApp;
 import com.gg.essayjoke.utils.GlideRequest;
 import com.gg.essayjoke.utils.GlideRequests;
-import com.gg.essayjoke.utils.GsonUtil;
-import com.gg.essayjoke.utils.KeyWord;
-import com.gg.essayjoke.utils.SharedPreferencesHelper;
 import com.gg.framelibrary.BaseSkinActivity;
 import com.gg.framelibrary.skin.SkinResource;
 import com.gg.framelibrary.utils.ToastUtil;
@@ -62,7 +61,7 @@ public class SelectImageActivity extends BaseSkinActivity {
 
     private static final int KEY_REQUEST_CODE = 0x0033;
 
-    private static final int PRELOAD_AHEAD_ITEMS = 15;
+    private static final int PRELOAD_AHEAD_ITEMS = 30;
 
     //返回选择图片列表的EXTRA_KEY
     public static final String EXTRA_RESULT = "extra_result";
@@ -91,6 +90,7 @@ public class SelectImageActivity extends BaseSkinActivity {
 //    private GlideRequest<Drawable> thumbRequest;
 
     private SelectImageAdapter mSelectImageAdapter;
+    private ImageAdapter mImageAdapter;
 
     private int photoSize;
 
@@ -154,7 +154,9 @@ public class SelectImageActivity extends BaseSkinActivity {
         mImageRv.setLayoutManager(layoutManager);
         mSelectImageAdapter = new SelectImageAdapter(mImageList, mSelectList, fullRequest, mMaxCount);
 
-        mImageRv.setAdapter(mSelectImageAdapter);
+        mImageAdapter = new ImageAdapter(this,mImageList,fullRequest);
+
+        mImageRv.setAdapter(mImageAdapter);
 
 
         mImageRv.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -168,8 +170,8 @@ public class SelectImageActivity extends BaseSkinActivity {
         mImageRv.setRecyclerListener(new RecyclerView.RecyclerListener() {
             @Override
             public void onViewRecycled(RecyclerView.ViewHolder holder) {
-                BaseViewHolder viewHolder = (BaseViewHolder) holder;
-                glideRequests.clear(viewHolder.getView(R.id.select_img));
+                ImageAdapter.ImageViewHolder viewHolder = (ImageAdapter.ImageViewHolder) holder;
+                glideRequests.clear(viewHolder.mImageView);
             }
         });
 
@@ -181,27 +183,27 @@ public class SelectImageActivity extends BaseSkinActivity {
         FixedPreloadSizeProvider<SelectImageBean> preloadSizeProvider =
                 new FixedPreloadSizeProvider<>(photoSize, photoSize);
         RecyclerViewPreloader<SelectImageBean> preLoader = new RecyclerViewPreloader<>(
-                GlideApp.with(this), mSelectImageAdapter, preloadSizeProvider, PRELOAD_AHEAD_ITEMS);
+                GlideApp.with(this), mImageAdapter, preloadSizeProvider, PRELOAD_AHEAD_ITEMS);
 
         mImageRv.addOnScrollListener(preLoader);
 
-        mSelectImageAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                Intent intent = new Intent(SelectImageActivity.this, PhotoListActivity.class);
-                intent.putExtra(KEY_POSITION, mShowCamera ? position - 1 : position);
-                intent.putParcelableArrayListExtra(KEY_IMAGES, mSelectList);
-                startActivityForResult(intent, KEY_REQUEST_CODE);
-            }
-        });
+//        mSelectImageAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+//                Intent intent = new Intent(SelectImageActivity.this, PhotoListActivity.class);
+//                intent.putExtra(KEY_POSITION, mShowCamera ? position - 1 : position);
+//                intent.putParcelableArrayListExtra(KEY_IMAGES, mSelectList);
+//                startActivityForResult(intent, KEY_REQUEST_CODE);
+//            }
+//        });
 
-        mSelectImageAdapter.setSelectImageListener(new SelectImageListener() {
-            @Override
-            public void setSelect(ArrayList<SelectImageBean> list) {
-                exchangeViewShow();
-
-            }
-        });
+//        mSelectImageAdapter.setSelectImageListener(new SelectImageListener() {
+//            @Override
+//            public void setSelect(ArrayList<SelectImageBean> list) {
+//                exchangeViewShow();
+//
+//            }
+//        });
 
 
 
@@ -299,10 +301,10 @@ public class SelectImageActivity extends BaseSkinActivity {
                     }
                     mImageList.addAll(images);
 
-                    mSelectImageAdapter.notifyDataSetChanged();
-
-                    SharedPreferencesHelper.getInstance().init(SelectImageActivity.this)
-                            .putStringValue(KeyWord.IMAGE_PATH, GsonUtil.jsonToString(images));
+                    mImageAdapter.notifyDataSetChanged();
+//
+//                    SharedPreferencesHelper.getInstance().init(SelectImageActivity.this)
+//                            .putStringValue(KeyWord.IMAGE_PATH, GsonUtil.jsonToString(images));
                 }
 
                 @Override
@@ -340,14 +342,14 @@ public class SelectImageActivity extends BaseSkinActivity {
         }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (mImageRv != null) {
-            int index = layoutManager.findFirstVisibleItemPosition();
-            outState.putInt(STATE_POSITION_INDEX, index);
-        }
-    }
+//    @Override
+//    public void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//        if (mImageRv != null) {
+//            int index = layoutManager.findFirstVisibleItemPosition();
+//            outState.putInt(STATE_POSITION_INDEX, index);
+//        }
+//    }
 
 
     public class SelectImageAdapter extends BaseQuickAdapter<SelectImageBean, BaseViewHolder>
@@ -438,6 +440,65 @@ public class SelectImageActivity extends BaseSkinActivity {
             this.mSelectImageListener = listener;
         }
 
+
+    }
+
+    public class ImageAdapter<ImageViewHolder extends RecyclerView.ViewHolder> extends RecyclerView.Adapter  implements ListPreloader.PreloadModelProvider<SelectImageBean>{
+        private GlideRequest<Drawable> fullRequest;
+
+        private ArrayList<SelectImageBean> mData;
+        private Context mContext;
+
+        public ImageAdapter(Context context, ArrayList<SelectImageBean> list,GlideRequest<Drawable> fullRequest) {
+            mData = list;
+            mContext = context;
+            this.fullRequest = fullRequest;
+
+        }
+
+
+        @Override
+        public ImageAdapter.ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            ImageAdapter.ImageViewHolder viewHolder = new ImageAdapter.ImageViewHolder(LayoutInflater.from(mContext).inflate(R
+                    .layout.item_select_image, parent, false));
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            ImageAdapter.ImageViewHolder viewHolder = (ImageAdapter.ImageViewHolder) holder;
+            fullRequest.load(mData.get(position).getPath())
+//                        .thumbnail(thumbRequest.load(item.getPath()))
+                    .into(viewHolder.mImageView);
+//            Glide.with(mContext).load(mData.get(position)).into(viewHolder.mImageView);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mData.size();
+        }
+
+        private class ImageViewHolder extends RecyclerView.ViewHolder {
+
+            private ImageView mImageView;
+
+            public ImageViewHolder(View itemView) {
+                super(itemView);
+                mImageView = (ImageView) itemView.findViewById(R.id.select_img);
+            }
+        }
+
+        @Override
+        public List<SelectImageBean> getPreloadItems(int position) {
+            return mData.subList(position, position + 1);
+        }
+
+        @Override
+        public RequestBuilder getPreloadRequestBuilder(SelectImageBean item) {
+            return fullRequest
+                    /*.thumbnail(thumbRequest.load(item.getPath()))*/
+                    .load(item.getPath());
+        }
 
     }
 

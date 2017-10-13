@@ -156,7 +156,7 @@ public class MainActivity extends BaseSkinActivity {
     @OnClick(R.id.btn3)
     public void onMBtn3Clicked() {
 
-        startActivity(MainActivity.class);
+        startActivity(RecyclerViewActivity.class);
     }
 
     @OnClick(R.id.btn4)

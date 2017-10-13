@@ -32,7 +32,7 @@ public class GuardService extends Service {
         public void onServiceDisconnected(ComponentName name) {
             // 断开连接以后需要 重新启动服务 然后绑定服务
 
-            startService(new Intent(GuardService.this,MessageService.class));
+            startService(new Intent(GuardService.this, MessageService.class));
 
             bindService(new Intent(GuardService.this, MessageService.class), mServiceConnection, Context.BIND_IMPORTANT);
 
