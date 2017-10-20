@@ -12,7 +12,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,23 +31,25 @@ import com.gg.essayjoke.utils.GlideRequest;
 import com.gg.essayjoke.utils.GlideRequests;
 import com.gg.framelibrary.BaseSkinActivity;
 import com.gg.framelibrary.skin.SkinResource;
-import com.gg.framelibrary.utils.ToastUtil;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 
 /**
- * Creator:  GG
- * Time   :  2017/9/27
- * Mail   :  gg.jin.yu@gmail.com
- * Explain:
+ * Creator : GG
+ * Time    : 2017/10/20
+ * Mail    : gg.jin.yu@gmail.com
+ * Explain :
  */
 
 public class SelectImageActivity extends BaseSkinActivity {
+
+    private ArrayList<SelectImageBean> mImages = new ArrayList<>();
+
+    ImageAdapter mImageAdapter;
+    NewAdapter mNewAdapter;
 
     private static final String STATE_POSITION_INDEX = "state_position_index";
     private static final String STATE_POSITION_OFFSET = "state_position_offset";
@@ -86,16 +87,14 @@ public class SelectImageActivity extends BaseSkinActivity {
 
     private GridLayoutManager layoutManager;
 
+
+
+
     private GlideRequest<Drawable> fullRequest;
-//    private GlideRequest<Drawable> thumbRequest;
-
-    private SelectImageAdapter mSelectImageAdapter;
-    private ImageAdapter mImageAdapter;
-
     private int photoSize;
 
 
-    @BindView(R.id.image_rv) RecyclerView mImageRv;
+    @BindView(R.id.image_rv) RecyclerView mRecyclerView;
     @BindView(R.id.image_video_tv) TextView mImageVideoTv;
     @BindView(R.id.num_tv) TextView mNumTv;
     @BindView(R.id.preview_tv) TextView mPreviewTv;
@@ -106,14 +105,13 @@ public class SelectImageActivity extends BaseSkinActivity {
     }
 
     @Override
-    protected void initArguments() {
-        mSelectList = new ArrayList<>();
-        mImageList = new ArrayList<>();
+    protected int getLayoutRes() {
+        return R.layout.activity_select_image;
     }
 
     @Override
-    protected int getLayoutRes() {
-        return R.layout.activity_select_image;
+    protected void initArguments() {
+
     }
 
     @Override
@@ -124,23 +122,11 @@ public class SelectImageActivity extends BaseSkinActivity {
     @Override
     protected void initView() {
 
-        initRVList();
-
-    }
-
-    private void initRVList() {
-
-
         final GlideRequests glideRequests = GlideApp.with(this);
         fullRequest = glideRequests
                 .asDrawable()
                 .centerCrop();
 
-//        thumbRequest = glideRequests
-//                .asDrawable()
-////                .diskCacheStrategy(DiskCacheStrategy.DATA)
-//                .override(Api.SQUARE_THUMB_SIZE)
-//                .transition(withCrossFade());
 
 
         photoSize = getPageSize(R.dimen.medium_photo_side);
@@ -150,16 +136,17 @@ public class SelectImageActivity extends BaseSkinActivity {
         int spanCount = getResources().getDisplayMetrics()
                 .widthPixels / (photoSize + (2 * gridMargin));
 
-        layoutManager = new GridLayoutManager(this, spanCount);
-        mImageRv.setLayoutManager(layoutManager);
-        mSelectImageAdapter = new SelectImageAdapter(mImageList, mSelectList, fullRequest, mMaxCount);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
 
-        mImageAdapter = new ImageAdapter(this,mImageList,fullRequest);
+//        mImageAdapter = new ImageAdapter(this, mImages,fullRequest);
+//
+//        mRecyclerView.setAdapter(mImageAdapter);
 
-        mImageRv.setAdapter(mImageAdapter);
+        mNewAdapter = new NewAdapter(mImages,fullRequest);
 
+        mRecyclerView.setAdapter(mNewAdapter);
 
-        mImageRv.addItemDecoration(new RecyclerView.ItemDecoration() {
+        mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
                                        RecyclerView.State state) {
@@ -167,60 +154,87 @@ public class SelectImageActivity extends BaseSkinActivity {
             }
         });
 
-        mImageRv.setRecyclerListener(new RecyclerView.RecyclerListener() {
+        mRecyclerView.setRecyclerListener(new RecyclerView.RecyclerListener() {
             @Override
             public void onViewRecycled(RecyclerView.ViewHolder holder) {
-                ImageAdapter.ImageViewHolder viewHolder = (ImageAdapter.ImageViewHolder) holder;
-                glideRequests.clear(viewHolder.mImageView);
+//                ImageAdapter.ImageViewHolder viewHolder = (ImageAdapter.ImageViewHolder) holder;
+//                glideRequests.clear(viewHolder.mImageView);
+                BaseViewHolder viewHolder = (BaseViewHolder) holder;
+                glideRequests.clear(viewHolder.getView(R.id.select_img));
             }
         });
 
         int heightCount = getResources().getDisplayMetrics().heightPixels / photoSize;
-        mImageRv.getRecycledViewPool().setMaxRecycledViews(0, 3 * heightCount * 2);
-        mImageRv.setItemViewCacheSize(0);
+        mRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 3 * heightCount * 2);
+        mRecyclerView.setItemViewCacheSize(0);
 
 
         FixedPreloadSizeProvider<SelectImageBean> preloadSizeProvider =
                 new FixedPreloadSizeProvider<>(photoSize, photoSize);
+//        RecyclerViewPreloader<SelectImageBean> preLoader = new RecyclerViewPreloader<>(
+//                GlideApp.with(this), mImageAdapter, preloadSizeProvider, 30);
         RecyclerViewPreloader<SelectImageBean> preLoader = new RecyclerViewPreloader<>(
-                GlideApp.with(this), mImageAdapter, preloadSizeProvider, PRELOAD_AHEAD_ITEMS);
+                GlideApp.with(this), mNewAdapter, preloadSizeProvider, PRELOAD_AHEAD_ITEMS);
 
-        mImageRv.addOnScrollListener(preLoader);
+        mRecyclerView.addOnScrollListener(preLoader);
 
-//        mSelectImageAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-//                Intent intent = new Intent(SelectImageActivity.this, PhotoListActivity.class);
-//                intent.putExtra(KEY_POSITION, mShowCamera ? position - 1 : position);
-//                intent.putParcelableArrayListExtra(KEY_IMAGES, mSelectList);
-//                startActivityForResult(intent, KEY_REQUEST_CODE);
-//            }
-//        });
-
-//        mSelectImageAdapter.setSelectImageListener(new SelectImageListener() {
-//            @Override
-//            public void setSelect(ArrayList<SelectImageBean> list) {
-//                exchangeViewShow();
-//
-//            }
-//        });
-
-
-
-//        if (savedInstanceState != null) {
-//            int index = savedInstanceState.getInt(STATE_POSITION_INDEX);
-//            int offset = savedInstanceState.getInt(STATE_POSITION_OFFSET);
-//            layoutManager.scrollToPositionWithOffset(index, offset);
-//        }
+        getSupportLoaderManager().initLoader(0, null, mCallbacks);
     }
 
     @Override
     protected void initDate() {
 
-        initImageList();
-
-        exchangeViewShow();
     }
+
+    private int getPageSize(int id) {
+        return getResources().getDimensionPixelSize(id);
+    }
+
+    private LoaderManager.LoaderCallbacks<Cursor> mCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+
+        private final String[] IMAGE_PROJECTION = {
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.DATE_ADDED,
+                MediaStore.Images.Media.MIME_TYPE,
+                MediaStore.Images.Media.SIZE,
+                MediaStore.Images.Media._ID
+
+        };
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            CursorLoader cursorLoader = new CursorLoader(SelectImageActivity.this,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    IMAGE_PROJECTION,
+                    IMAGE_PROJECTION[4] + ">0 AND " + IMAGE_PROJECTION[3]
+                            + "=? OR " + IMAGE_PROJECTION[3] + "=? ",
+                    new String[]{"image/jpeg", "image/png"},
+                    IMAGE_PROJECTION[2] + " DESC");
+            return cursorLoader;
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if (data != null && data.getCount() > 0) {
+                data.moveToFirst();
+                while (data.moveToNext()) {
+                    String path = data.getString(data.getColumnIndexOrThrow(IMAGE_PROJECTION[0]));
+                    String name = data.getString(data.getColumnIndexOrThrow(IMAGE_PROJECTION[1]));
+                    long time = data.getLong(data.getColumnIndexOrThrow(IMAGE_PROJECTION[2]));
+                    mImages.add(new SelectImageBean(name, path, time));
+                }
+            }
+
+            mNewAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+
+        }
+    };
+
 
     /**
      * 根据选中图片的数量改变提示文字
@@ -234,222 +248,14 @@ public class SelectImageActivity extends BaseSkinActivity {
         mNumTv.setText(mSelectList.size() + "/" + mMaxCount);
     }
 
-    /**
-     * 异步任务获取手机内的所有图片
-     */
-    private void initImageList() {
-        getSupportLoaderManager().initLoader(LOADER_TYPE, null, mCallbacks);
-    }
-
-    private LoaderManager.LoaderCallbacks<Cursor> mCallbacks =
-            new LoaderManager.LoaderCallbacks<Cursor>() {
-
-                private final String[] IMAGE_PROJECTION = {
-                        MediaStore.Images.Media.DATA,
-                        MediaStore.Images.Media.DISPLAY_NAME,
-                        MediaStore.Images.Media.DATE_ADDED,
-                        MediaStore.Images.Media.MIME_TYPE,
-                        MediaStore.Images.Media.SIZE,
-                        MediaStore.Images.Media._ID
-
-                };
-
-
-                @Override
-                public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-//                    CursorLoader cursorLoader = new CursorLoader(SelectImageActivity.this,
-//                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-//                            IMAGE_PROJECTION,
-//                            IMAGE_PROJECTION[4] + ">0 AND " + IMAGE_PROJECTION[3]
-//                                    + "=? OR " + IMAGE_PROJECTION[3] + "=? ",
-//                            new String[]{"image/jpeg", "image/png"},
-//                            IMAGE_PROJECTION[2] + " DESC");
-//
-//                    return cursorLoader;
-                            CursorLoader cursorLoader = new CursorLoader(SelectImageActivity.this,
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION,
-                            null, null, IMAGE_PROJECTION[2] + " DESC");
-                    return cursorLoader;
-                }
-
-                @Override
-                public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-                    ArrayList<SelectImageBean> images = new ArrayList<>();
-
-                    //如果有数据变量
-                    if (data != null & data.getCount() > 0) {
-                        data.moveToFirst();
-                        while (data.moveToNext()) {
-                            String path = data.getString(data.getColumnIndexOrThrow(IMAGE_PROJECTION[0]));
-                            String name = data.getString(data.getColumnIndexOrThrow(IMAGE_PROJECTION[1]));
-                            long dateTime = data.getLong(data.getColumnIndexOrThrow(IMAGE_PROJECTION[2]));
-//                    XLog.e(path + " " + name + " " + dateTime+images.size());
-
-                            if (!pathExist(path)) {
-                                continue;
-                            }
-
-                            images.add(new SelectImageBean(name, path, dateTime));
-                        }
-                    }
-
-                    mImageList.clear();
-
-                    //设置是否显示相机位置
-                    if (mShowCamera) {
-                        mImageList.add(new SelectImageBean("camera", "", 0));
-                    }
-                    mImageList.addAll(images);
-
-                    mImageAdapter.notifyDataSetChanged();
-//
-//                    SharedPreferencesHelper.getInstance().init(SelectImageActivity.this)
-//                            .putStringValue(KeyWord.IMAGE_PATH, GsonUtil.jsonToString(images));
-                }
-
-                @Override
-                public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
-
-                }
-
-                /**
-                 * 判断文件是否存在
-                 * @param path
-                 * @return
-                 */
-                private boolean pathExist(String path) {
-                    if (!TextUtils.isEmpty(path)) {
-                        return new File(path).exists();
-                    }
-                    return false;
-                }
-
-            };
-
-    private int getPageSize(int id) {
-        return getResources().getDimensionPixelSize(id);
-    }
-
-    @OnClick({R.id.image_video_tv, R.id.preview_tv})
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.image_video_tv:
-                break;
-            case R.id.preview_tv:
-                break;
-            default:
-
-        }
-    }
-
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        if (mImageRv != null) {
-//            int index = layoutManager.findFirstVisibleItemPosition();
-//            outState.putInt(STATE_POSITION_INDEX, index);
-//        }
-//    }
-
-
-    public class SelectImageAdapter extends BaseQuickAdapter<SelectImageBean, BaseViewHolder>
-            implements ListPreloader.PreloadModelProvider<SelectImageBean> {
-
-        private ArrayList<SelectImageBean> mResultList;
-        private int mMaxCount;
-        private GlideRequest<Drawable> fullRequest;
-        private SelectImageListener mSelectImageListener;
-
-
-        public SelectImageAdapter(@Nullable List<SelectImageBean> data, ArrayList<SelectImageBean> imageList, GlideRequest<Drawable> fullRequest, int mMaxCount) {
-            super(R.layout.item_select_image, data);
-            this.mResultList = imageList;
-            this.fullRequest = fullRequest;
-            this.mMaxCount = mMaxCount;
-        }
-
-        @Override
-        protected void convert(final BaseViewHolder holder, final SelectImageBean item) {
-            if (TextUtils.isEmpty(item.getPath())) { // show camera image
-                holder.setImageResource(R.id.select_img, R.drawable.ic_camera)
-                        .setVisible(R.id.select_state_img, false);
-            } else {
-
-                fullRequest.load(item.getPath())
-//                        .thumbnail(thumbRequest.load(item.getPath()))
-                        .into((ImageView) holder.getView(R.id.select_img));
-                holder.setVisible(R.id.select_state_img, true);
-//                ImageLoader.getInstance().displayImage(mContext, item.getPath(), (ImageView) holder.getView(R.id.select_img));
-            }
-
-            if (mResultList.contains(item)) {
-                holder.getView(R.id.select_state_img).setSelected(true);
-            } else {
-                holder.getView(R.id.select_state_img).setSelected(false);
-            }
-
-            holder.getView(R.id.select_state_img).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mResultList.contains(item)) {
-                        mResultList.remove(item);
-                    } else {
-                        if (mResultList.size() >= mMaxCount) {
-                            ToastUtil.showShort(getString(R.string.toast_select_image, mMaxCount));
-                            return;
-                        } else {
-                            mResultList.add(item);
-                        }
-                    }
-                    notifyItemChanged(holder.getAdapterPosition(), 1);
-                    if (mSelectImageAdapter != null) {
-                        mSelectImageListener.setSelect(mResultList);
-                    }
-                }
-            });
-
-        }
-
-
-        @Override
-        public void onBindViewHolder(BaseViewHolder holder, int position, List<Object> payloads) {
-            if (payloads.isEmpty()) {
-                onBindViewHolder(holder, position);
-            } else {
-                if (mResultList.contains(mData.get(position))) {
-                    holder.getView(R.id.select_state_img).setSelected(true);
-                } else {
-                    holder.getView(R.id.select_state_img).setSelected(false);
-                }
-            }
-        }
-
-        @Override
-        public List<SelectImageBean> getPreloadItems(int position) {
-            return mData.subList(position, position + 1);
-        }
-
-        @Override
-        public RequestBuilder getPreloadRequestBuilder(SelectImageBean item) {
-            return fullRequest
-                    /*.thumbnail(thumbRequest.load(item.getPath()))*/
-                    .load(item.getPath());
-        }
-
-        public void setSelectImageListener(SelectImageListener listener) {
-            this.mSelectImageListener = listener;
-        }
-
-
-    }
-
-    public class ImageAdapter<ImageViewHolder extends RecyclerView.ViewHolder> extends RecyclerView.Adapter  implements ListPreloader.PreloadModelProvider<SelectImageBean>{
+    public class ImageAdapter<ImageViewHolder extends RecyclerView.ViewHolder> extends RecyclerView.Adapter implements ListPreloader
+            .PreloadModelProvider<SelectImageBean> {
         private GlideRequest<Drawable> fullRequest;
 
         private ArrayList<SelectImageBean> mData;
         private Context mContext;
 
-        public ImageAdapter(Context context, ArrayList<SelectImageBean> list,GlideRequest<Drawable> fullRequest) {
+        public ImageAdapter(Context context, ArrayList<SelectImageBean> list, GlideRequest<Drawable> fullRequest) {
             mData = list;
             mContext = context;
             this.fullRequest = fullRequest;
@@ -467,9 +273,7 @@ public class SelectImageActivity extends BaseSkinActivity {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             ImageAdapter.ImageViewHolder viewHolder = (ImageAdapter.ImageViewHolder) holder;
-            fullRequest.load(mData.get(position).getPath())
-//                        .thumbnail(thumbRequest.load(item.getPath()))
-                    .into(viewHolder.mImageView);
+            fullRequest.load(mData.get(position).getPath()).into(viewHolder.mImageView);
 //            Glide.with(mContext).load(mData.get(position)).into(viewHolder.mImageView);
         }
 
@@ -484,7 +288,7 @@ public class SelectImageActivity extends BaseSkinActivity {
 
             public ImageViewHolder(View itemView) {
                 super(itemView);
-                mImageView = (ImageView) itemView.findViewById(R.id.select_img);
+                mImageView = itemView.findViewById(R.id.select_img);
             }
         }
 
@@ -502,5 +306,29 @@ public class SelectImageActivity extends BaseSkinActivity {
 
     }
 
+    public class NewAdapter extends BaseQuickAdapter<SelectImageBean, BaseViewHolder> implements ListPreloader
+            .PreloadModelProvider<SelectImageBean> {
+        GlideRequest fullRequest;
 
+        public NewAdapter(@Nullable List<SelectImageBean> data, GlideRequest fullRequest) {
+            super(R.layout.item_select_image, data);
+            this.fullRequest = fullRequest;
+        }
+
+        protected void convert(BaseViewHolder helper, SelectImageBean item) {
+           fullRequest.load(item.getPath()).into((ImageView) helper.getView(R.id.select_img));
+        }
+
+        @Override
+        public List<SelectImageBean> getPreloadItems(int position) {
+            return mData.subList(position, position + 1);
+        }
+
+        @Override
+        public RequestBuilder getPreloadRequestBuilder(SelectImageBean item) {
+            return fullRequest
+                    /*.thumbnail(thumbRequest.load(item.getPath()))*/
+                    .load(item.getPath());
+        }
+    }
 }
